@@ -93,27 +93,26 @@ mye.start(function(err){
 
 
 ## Events
-Event        | Data              | .
------------- | ----------------- | ---
+Event        | Data              | . 
+------------ | ----------------- | --- 
 connected    | | 
 disconnected | | 
 reconnecting | | 
 recovering   | | 
-|
 error        | Error | 
-|
-change       | DB, Table, Event  | Any of the following events
+change       | DB, Table, Event  | Any of the following events 
 insert       | DB, Table | 
 update       | DB, Table | 
 delete       | DB, Table | 
 truncate     | DB, Table | 
 
 ### Vanilla Events
-For your individual db's and tables, vanilla events can be defined: `mye.on('MyDB.MyTable.insert')`.
-Event                      | Data
--------------------------- | ---
-[TABLE]                    | Event
+For your individual db's and tables, vanilla events can be defined: `mye.on('MyDB.MyTable.insert')`.  
+
+Event                      | Data 
+-------------------------- | --- 
+[TABLE]                    | Event 
 [TABLE].[EVENT]            | 
-[DATABASE]                 | Table, Event
-[DATABASE].[TABLE]         | Event
+[DATABASE]                 | Table, Event 
+[DATABASE].[TABLE]         | Event 
 [DATABASE].[TABLE].[EVENT] | 
