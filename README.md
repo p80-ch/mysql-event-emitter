@@ -1,5 +1,5 @@
 # mysql-event-emitter
-A mysql / mariadb change emitter.  
+A mysql / mariadb event emitter.  
 
 _For now it will only tell you \*that\* something changed - not what changed._
 

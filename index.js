@@ -18,7 +18,7 @@ class MyEmitter extends EventEmitter
    * @param Object conf
    * @param Object conf.mysql                       - mysql pool connection options; 
    * @param Object [conf.binlog=null]           
-   * @param Object [conf.binlog.slaveId=1]          - When using ultiple clients against the same mysql server this ID must be counted up
+   * @param Object [conf.binlog.slaveId=1]          - When using multiple clients against the same mysql server this ID must be counted up
    * @param Object [conf.binlog.recoverTimeout=240] - Time in ms between reconnection attempts
    */
   constructor(conf)

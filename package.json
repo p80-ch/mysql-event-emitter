@@ -1,7 +1,7 @@
 {
   "name": "mysql-event-emitter",
   "version": "1.0.2",
-  "description": "A mysql / mariadb change emitter",
+  "description": "A mysql / mariadb event emitter",
   "main": "index.js",
   "scripts": {
     "test": "mocha tst/_index.js"
@@ -20,10 +20,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/p80-ch/mocha-streambuffer.git"
+    "url": "https://github.com/p80-ch/mysql-event-emitter.git"
   },
   "bugs": {
-    "url": "https://github.com/p80-ch/mocha-streambuffer/issues",
+    "url": "https://github.com/p80-ch/mysql-event-emitter/issues",
     "email": "github@p80.ch"
   },
   "dependencies": {
