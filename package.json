@@ -1,6 +1,6 @@
 {
   "name": "mysql-event-emitter",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A mysql / mariadb event emitter",
   "main": "index.js",
   "scripts": {
