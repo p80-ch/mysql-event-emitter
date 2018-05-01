@@ -11,8 +11,7 @@ const BinlogEvent = MyBinlogEmitter.BinlogEvents;
 const EventEmitter = require('events');
 
 
-class MyEmitter extends EventEmitter
-{
+class MyEmitter extends EventEmitter {
 
   /**
    * @param Object conf
@@ -21,8 +20,7 @@ class MyEmitter extends EventEmitter
    * @param Object [conf.binlog.slaveId=1]          - When using multiple clients against the same mysql server this ID must be counted up
    * @param Object [conf.binlog.recoverTimeout=240] - Time in ms between reconnection attempts
    */
-  constructor(conf)
-  {
+  constructor(conf) {
     super();
 
 
@@ -68,85 +66,69 @@ class MyEmitter extends EventEmitter
       'truncate',
     ];
     this._hasVanillaEvents = false;
-    this.on('newListener', function(event, listener)
-    {
-      if (events.indexOf(event) == -1)
-      {
+    this.on('newListener', function(event, listener) {
+      if (events.indexOf(event) == -1) {
         this._hasVanillaEvents = true;
       }
     }.bind(this));
 
-
-    this._tm = null; // table map
+    // table map
+    this._tm = {};
   }
 
-  _table_map(packet)
-  {
-    if (!packet.data)
-    {
+  _table_map(packet) {
+    if (!packet.data) {
       this.emit('error', new Error('No packet data'), packet);
       return;
-    }
-    else if (!packet.data.tableId)
-    {
+    } else if (!packet.data.tableId) {
       this.emit('error', new Error('No packet table id'), packet);
       return;
     }
 
-    this._tm = {
-      id: packet.data.tableId,
+    this._tm['x' + packet.data.tableId] = {
       schema: packet.data.schemaName,
       table: packet.data.tableName,
     };
   }
 
-  _rows(packet)
-  {
-    if (!this._tm)
-    {
-      this.emit('error', new Error('No table map'));
-      return;
-    }
-    else if (!packet.data)
-    {
+  _rows(packet) {
+
+    if (!packet.data) {
       this.emit('error', new Error('No packet data'), packet);
       return;
-    }
-    else if (!packet.data.tableId)
-    {
+    } else if (!packet.data.tableId) {
       this.emit('error', new Error('No packet table id'), packet);
       return;
-    }
-    else if (this._tm.id != packet.data.tableId)
-    {
-      this.emit('error', new Error('Wrong table id'));
+    } else if (!this._tm['x' + packet.data.tableId]) {
+      this.emit('error', new Error('No table id'));
       return;
     }
 
-    switch (packet.eventType)
-    {
+    var tm = this._tm['x' + packet.data.tableId];
+
+    switch (packet.eventType) {
       case BinlogEvent.WRITE_ROWS_EVENTv0:
       case BinlogEvent.WRITE_ROWS_EVENTv1:
       case BinlogEvent.WRITE_ROWS_EVENTv2:
-        this.emit('insert', this._tm.schema, this._tm.table);
-        this.emit('change', this._tm.schema, this._tm.table, 'insert');
-        this._vanilla(this._tm.schema, this._tm.table, 'insert');
+        this.emit('insert', tm.schema, tm.table);
+        this.emit('change', tm.schema, tm.table, 'insert');
+        this._vanilla(tm.schema, tm.table, 'insert');
         break;
 
       case BinlogEvent.UPDATE_ROWS_EVENTv0:
       case BinlogEvent.UPDATE_ROWS_EVENTv1:
       case BinlogEvent.UPDATE_ROWS_EVENTv2:
-        this.emit('update', this._tm.schema, this._tm.table);
-        this.emit('change', this._tm.schema, this._tm.table, 'update');
-        this._vanilla(this._tm.schema, this._tm.table, 'update');
+        this.emit('update', tm.schema, tm.table);
+        this.emit('change', tm.schema, tm.table, 'update');
+        this._vanilla(tm.schema, tm.table, 'update');
         break;
 
       case BinlogEvent.DELETE_ROWS_EVENTv0:
       case BinlogEvent.DELETE_ROWS_EVENTv1:
       case BinlogEvent.DELETE_ROWS_EVENTv2:
-        this.emit('delete', this._tm.schema, this._tm.table);
-        this.emit('change', this._tm.schema, this._tm.table, 'delete');
-        this._vanilla(this._tm.schema, this._tm.table, 'delete');
+        this.emit('delete', tm.schema, tm.table);
+        this.emit('change', tm.schema, tm.table, 'delete');
+        this._vanilla(tm.schema, tm.table, 'delete');
         break;
 
       default:
@@ -154,27 +136,21 @@ class MyEmitter extends EventEmitter
     }
   }
 
-  _query(packet)
-  {
-    if (!packet.data)
-    {
+  _query(packet) {
+    if (!packet.data) {
       this.emit('error', new Error('No packet data'), packet);
       return;
-    }
-    else if (!packet.data.query)
-    {
+    } else if (!packet.data.query) {
       this.emit('error', new Error('No query'), packet);
       return;
     }
 
-    if (packet.data.query.substr(0, 8) == 'TRUNCATE')
-    {
+    if (packet.data.query.substr(0, 8) == 'TRUNCATE') {
       var q = packet.data.query;
 
       q = q.substr(9); // remove TRUNCATE 
 
-      if (q.substr(0, 5) == 'TABLE')
-      {
+      if (q.substr(0, 5) == 'TABLE') {
         q = q.substr(6); // remove TABLE
       }
 
@@ -188,10 +164,8 @@ class MyEmitter extends EventEmitter
     }
   }
 
-  _vanilla(schema, table, event)
-  {
-    if (this._hasVanillaEvents)
-    {
+  _vanilla(schema, table, event) {
+    if (this._hasVanillaEvents) {
       this.emit(schema, table, event);
       this.emit(table, event);
       this.emit(schema + '.' + table, event);
@@ -204,8 +178,7 @@ class MyEmitter extends EventEmitter
   /**
    * @param Function [cb]
    */
-  start(cb)
-  {
+  start(cb) {
     this._mbe.start(cb);
   }
 
@@ -213,8 +186,7 @@ class MyEmitter extends EventEmitter
   /**
    * @param Function [cb]
    */
-  stop(cb)
-  {
+  stop(cb) {
     this._mbe.stop(cb);
   }
 
@@ -222,8 +194,7 @@ class MyEmitter extends EventEmitter
   /**
    * @param Function [cb]
    */
-  restart(cb)
-  {
+  restart(cb) {
     this._mbe.restart(cb);
   }
 
