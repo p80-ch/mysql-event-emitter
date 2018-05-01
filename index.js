@@ -65,6 +65,7 @@ class MyEmitter extends EventEmitter {
       'delete',
       'truncate',
     ];
+
     this._hasVanillaEvents = false;
     this.on('newListener', function(event, listener) {
       if (events.indexOf(event) == -1) {
@@ -72,11 +73,13 @@ class MyEmitter extends EventEmitter {
       }
     }.bind(this));
 
+
     // table map
     this._tm = {};
   }
 
   _table_map(packet) {
+
     if (!packet.data) {
       this.emit('error', new Error('No packet data'), packet);
       return;
@@ -89,6 +92,7 @@ class MyEmitter extends EventEmitter {
       schema: packet.data.schemaName,
       table: packet.data.tableName,
     };
+
   }
 
   _rows(packet) {
@@ -107,6 +111,7 @@ class MyEmitter extends EventEmitter {
     var tm = this._tm['x' + packet.data.tableId];
 
     switch (packet.eventType) {
+
       case BinlogEvent.WRITE_ROWS_EVENTv0:
       case BinlogEvent.WRITE_ROWS_EVENTv1:
       case BinlogEvent.WRITE_ROWS_EVENTv2:
@@ -137,6 +142,7 @@ class MyEmitter extends EventEmitter {
   }
 
   _query(packet) {
+    
     if (!packet.data) {
       this.emit('error', new Error('No packet data'), packet);
       return;
