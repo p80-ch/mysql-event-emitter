@@ -27,7 +27,7 @@
     "email": "github@p80.ch"
   },
   "dependencies": {
-    "mysql-binlog-emitter": "0.0.15"
+    "mysql-binlog-emitter": "0.0.16"
   },
   "devDependencies": {
     "grunt": "^1.0.2",
